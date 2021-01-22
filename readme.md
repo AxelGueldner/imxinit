@@ -11,14 +11,9 @@ If you want to init DOM node specific JavaScript code in dependency of certain a
 ```
 $ npm install imxinit
 ```
-After this you can either simply require imxQuery:
+After this you can simply require imxQuery:
 ```javascript
 var imxInit = require('imxinit');
-```
-
-or simply include it via script tag:
-```javascript
-<script type="text/javascript" src="node_modules/imxinit/index.js"></script>
 ```
 
 ## Accessing imxInit

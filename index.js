@@ -1,21 +1,6 @@
-var imxQuery = imxQuery || {};
+var imxQuery = require('imxquery');
 
-(function (root, factory) {
-  if (typeof define === 'function' && define.amd) {
-    // AMD. Register as an anonymous module.
-    define([], factory);
-
-  } else if (typeof exports === 'object') {
-    imxQuery = require('imxquery');
-
-    // Node. Does not work with strict CommonJS, but only CommonJS-like enviroments that support module.exports, like Node.
-    module.exports = factory;
-
-  } else {
-    // Browser globals (root is window)
-    root.imxInit = factory;
-  }
-})(this, (() => {
+module.exports = (function imxInit() {
 
   /**
    * call from outside to register new listener
@@ -25,19 +10,19 @@ var imxQuery = imxQuery || {};
    */
   const addListener = (params) => {
     const baseParams = {
-      type : 'viewport',
-      node : null,
-      initCallback : null,
-      updateCallback : null
+      type: 'viewport',
+      node: null,
+      initCallback: null,
+      updateCallback: null
     };
 
     // update input config with base params for fallback
     const listener = imxQuery.extendObject(params, baseParams);
 
     // check if the listener type is in the whitelist
-    if(typeList.indexOf(listener.type) === -1){
+    if(typeList.indexOf(listener.type) === -1) {
       return false;
-    }else{
+    }else {
       _registerNewListener(listener);
       return listener;
     }
@@ -51,7 +36,7 @@ var imxQuery = imxQuery || {};
    */
   const _registerNewListener = (listener) => {
     // if this is the first listener of that type …
-    if(typeof(library[listener.type]) !== 'object'){
+    if(typeof (library[listener.type]) !== 'object') {
       // … create an empty array for that type
       library[listener.type] = [];
     }
@@ -71,9 +56,9 @@ var imxQuery = imxQuery || {};
    * @private
    */
   const _createOriginEvents = (listener) => {
-    switch (listener.type) {
+    switch(listener.type) {
       case 'viewport':
-        if(!globalTypes.viewport){
+        if(!globalTypes.viewport) {
           globalTypes.viewport = true;
           _createOriginEvents_viewport();
         }
@@ -97,15 +82,15 @@ var imxQuery = imxQuery || {};
       const scrollPosition = window.pageYOffset;
       const windowHeight = window.innerHeight;
 
-      for(let listener of library.viewport){
+      for(let listener of library.viewport) {
         const nodeHeight = listener.node.offsetHeight;
         const nodeOffset = imxQuery.offsetTop(listener.node);
 
         // obviously the current node is inside the viewport
-        if(scrollPosition + windowHeight >= nodeOffset && scrollPosition < nodeOffset + nodeHeight){
-          if(!listener.rendered){
+        if(scrollPosition + windowHeight >= nodeOffset && scrollPosition < nodeOffset + nodeHeight) {
+          if(!listener.rendered) {
             _dispatchInitEvent(listener);
-          }else{
+          }else {
             _dispatchUpdateEvent(listener);
           }
         }
@@ -126,9 +111,9 @@ var imxQuery = imxQuery || {};
    */
   const _createOriginEvents_hover = (listener) => {
     const handleEvent = () => {
-      if(!listener.rendered){
+      if(!listener.rendered) {
         _dispatchInitEvent(listener);
-      }else{
+      }else {
         _dispatchUpdateEvent(listener);
       }
     };
@@ -144,9 +129,9 @@ var imxQuery = imxQuery || {};
    */
   const _createOriginEvents_click = (listener) => {
     const handleEvent = () => {
-      if(!listener.rendered){
+      if(!listener.rendered) {
         _dispatchInitEvent(listener);
-      }else{
+      }else {
         _dispatchUpdateEvent(listener);
       }
     };
@@ -166,7 +151,7 @@ var imxQuery = imxQuery || {};
 
     listener.node.dispatchEvent(initEvent);
 
-    if(typeof(listener.initCallback) == 'function'){
+    if(typeof (listener.initCallback) == 'function') {
       listener.initCallback();
     }
 
@@ -176,7 +161,7 @@ var imxQuery = imxQuery || {};
   const _dispatchUpdateEvent = (listener) => {
     listener.node.dispatchEvent(updateEvent);
 
-    if(typeof(listener.updateCallback) == 'function'){
+    if(typeof (listener.updateCallback) == 'function') {
       listener.updateCallback();
     }
   };
@@ -189,10 +174,10 @@ var imxQuery = imxQuery || {};
    * @private
    */
   const _createEvent = (name) => {
-    if (typeof window.Event === 'function') {
+    if(typeof window.Event === 'function') {
       return new Event(name);
 
-    } else {
+    }else {
       const customEvent = document.createEvent('Event');
       customEvent.initEvent(name, false, true);
       return customEvent;
@@ -203,12 +188,12 @@ var imxQuery = imxQuery || {};
   const updateEvent = _createEvent('imx_update');
 
   const typeList = ['viewport', 'hover', 'click'];
-  const globalTypes = { viewport : false };
+  const globalTypes = {viewport: false};
 
   const library = {};
 
   return {
-    addListener : addListener
+    addListener: addListener
   };
 
-})());
+})();
